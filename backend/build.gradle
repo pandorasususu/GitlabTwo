@@ -40,12 +40,20 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
 
-    //runtimeOnly("mysql:mysql-connector-java")
+    runtimeOnly("mysql:mysql-connector-java")
 
     // querydsl
 //    annotationProcessor("com.querydsl:querydsl-apt:4.4.0:jpa")
 //    implementation("com.querydsl:querydsl-jpa:4.4.0")
 //    implementation("com.querydsl:querydsl-apt:4.4.0")
+
+//    // Spark core
+//    implementation 'org.apache.spark:spark-core_2.13:3.3.0'
+//    // Spark sql
+//    compileOnly 'org.apache.spark:spark-sql_2.13:3.2.1'
+
+    /* kafka */
+    implementation 'org.springframework.kafka:spring-kafka'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
