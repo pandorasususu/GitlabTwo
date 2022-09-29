@@ -6,20 +6,41 @@ import com.ssafy.api.request.UserRegistReq;
 import com.ssafy.api.response.BaseResponseBody;
 import com.ssafy.api.response.UserChoiceGetRes;
 import com.ssafy.api.response.UserRegistRes;
+import com.ssafy.api.service.UserService;
+import com.ssafy.common.auth.HelloStrangerUserDetails;
+import com.ssafy.common.util.JwtTokenUtil;
+import com.ssafy.db.entity.User;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.PumpStreamHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.ssafy.common.python.CallPython.exePython;
 
 @Api(value = "유저 API", tags = {"User"})
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
+
+    @Autowired
+    UserService userService;
 
     @PostMapping()
     @ApiOperation(value = "소셜로그인, 소셜회원가입", notes = "저장되지 않은 이메일 일 시에는 회원가입과 로그인을 시키고, 저장된 이메일 일 시에는 로그인 시켜준다")
@@ -29,14 +50,20 @@ public class UserController {
     })
     public ResponseEntity<UserRegistRes> registUser(@RequestBody UserRegistReq userRegistReq){
 
-        String idToken = userRegistReq.getIdToken();
+        String email = userRegistReq.getEmail();
+        String nickname = userRegistReq.getNickname();
+        String img = userRegistReq.getImg();
 
         //이미일 중복 확인
+        User user = userService.getUserByUserEmail(userRegistReq.getEmail());
 
-        // 회원가입 처리
+        // 없으면 회원가입
+        if(user == null){
+            user = userService.createUser(email, nickname, img);
+        }
 
         // accessToken 반환
-        String accessToken = "12345";
+        String accessToken = JwtTokenUtil.getToken(email);
         UserRegistRes res = UserRegistRes.builder()
                 .accessToken(accessToken)
                 .build();
@@ -49,9 +76,10 @@ public class UserController {
             @ApiResponse(code = 200, message = "성공"),
 //            @ApiResponse(code = 901, message = "유효하지 않은 값"),
     })
-    public ResponseEntity<Void> deleteUser(){
+    public ResponseEntity<Void> deleteUser(@ApiIgnore Authentication authentication){
         // auth에서 가져오기
-        String accessToken;
+        HelloStrangerUserDetails userDetails = (HelloStrangerUserDetails)authentication.getDetails();
+        User user = userDetails.getUser();
 
         // 탈퇴 처리
         return ResponseEntity.status(200).build();
@@ -134,6 +162,18 @@ public class UserController {
             if("Y".equals(yn) || "N".equals(yn)) continue;
             else return ResponseEntity.status(901).body(BaseResponseBody.of(901, "유효하지 않은 값입니다."));
         }
+
+        URL activityRecommend = getClass().getClassLoader().getResource("activity_contents_based.py");
+        String[] command = new String[2];
+        command[0] = "python";
+        command[1] = new File(activityRecommend.getPath()).getAbsolutePath();
+
+        try {
+            exePython(command);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return ResponseEntity.status(200).body(BaseResponseBody.of(200, "정상적으로 저장되었습니다."));
     }
 }
