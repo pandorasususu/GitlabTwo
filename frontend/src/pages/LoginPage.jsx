@@ -3,7 +3,6 @@ import mascot from '../assets/images/WalkingGirl.gif';
 import Container from 'components/common/Container';
 import 'styles/LoginPage/LoginPage.scss';
 import axios from 'axios';
-import SpotifyLogin from 'react-spotify-login';
 import spotify_logo from 'assets/images/spotify_logo.png';
 
 const generateRandomString = (length) => {
@@ -75,6 +74,3 @@ const LoginPage = ({ onSocial }) => {
       </Container>
     </div>
   );
-};
-
-export default LoginPage;

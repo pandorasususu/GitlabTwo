@@ -39,7 +39,7 @@ export default function SpotifyRedirectHandler() {
           // 로그인 성공 시, 첫 로그인 여부에 따라서 페이지 다르게 이동
           if (login?.status === 200) {
             localStorage.setItem('token', login.data.accessToken);
-            // localStorage.setItem('email', info.data.email)
+            localStorage.setItem('email', info.data.email)
             window.location.replace('/guide/first');
           }
           // 로그인 실패 시
@@ -54,7 +54,6 @@ export default function SpotifyRedirectHandler() {
       },
       (err) => {
         console.log(err);
-        // window.location.replace('/guide/first');
       }
     );
   }, []);

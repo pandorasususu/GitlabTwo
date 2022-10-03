@@ -37,7 +37,7 @@ const EnterInfoGuideThird = () => {
             </div>
             <div className='Guide__First__Alarm'><ErrorOutlineIcon color="error" fontSize="small"/><p>튜토리얼 입니다!!</p></div>
             <div className='Guide__Third__Item'>
-              <div>버튼을 새로고침 하고 싶으면 리셋 버튼을 누르세요!</div>
+              <div>버튼을 새로고침 하려면 리셋을 누르세요!</div>
               <div className='Guide__Third__Item__Downarrow'><ArrowDownwardIcon/></div>
                 <EnterInfoBasicCard/>
               <div className='Guide__Third__Item__Uparrow'><ArrowUpwardIcon/></div>
